@@ -80,12 +80,12 @@ void merge(int v[], int l, int m, int r) {
     free(RVec);
 }
 
-void merge_sort(int v[], int l, int r){
+void mergesort_recurs(int v[], int l, int r){
     if(l < r){
         int m = l + (r - l) / 2;
 
-        merge_sort(v, l, m);
-        merge_sort(v, m+1, r);
+        mergesort_recurs(v, l, m);
+        mergesort_recurs(v, m+1, r);
 
         merge(v, l, m, r);
     }
@@ -142,7 +142,7 @@ int main(void){
     double times_iterative[10];
 
     printf("Merge Sort Recursivo:\n");
-    iterador_merge_recursiv(merge_sort, v, SIZE, times_recursive);
+    iterador_merge_recursiv(mergesort_recurs, v, SIZE, times_recursive);
     printV(v, times_recursive, 10);
 
     printf("\nMerge Sort Iterativo:\n");
