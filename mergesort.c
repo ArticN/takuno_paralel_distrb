@@ -15,8 +15,13 @@ void merge(int v[], int l, int m, int r) {
     int n1 = m - l + 1;
     int n2 = r - m;
 
-    int *LVec = (int*) malloc(n1 * sizeof(int));
-    int *RVec = (int*) malloc(n2 * sizeof(int));
+    int *LVec = (int*) calloc(n1, sizeof(int));
+    int *RVec = (int*) calloc(n2, sizeof(int));
+
+    if (LVec == NULL || RVec == NULL) {
+        fprintf(stderr, "Erro ao alocar memória\n");
+        exit(EXIT_FAILURE);
+    }
 
     for (i = 0; i < n1; i++)
         LVec[i] = v[l + i];
