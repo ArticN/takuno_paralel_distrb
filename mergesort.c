@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define SIZE 1000
+#define SIZE 100000
 
 void printV(int v[], double times[], int n){
     double sum = 0;
