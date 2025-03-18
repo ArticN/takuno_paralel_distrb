@@ -135,16 +135,6 @@ void iterador_merge_paralelo(void (*sort_func)(int[], int), int v[], int n, doub
     }
 }
 
-void print_times(double times[], int n) {
-    double sum = 0;
-    printf("Tempos de execução:\n");
-    for (int i = 0; i < n; i++) {
-        printf("Execução %d: %f segundos\n", i + 1, times[i]);
-        sum += times[i];
-    }
-    printf("Média: %f segundos\n", sum / n);
-}
-
 int main(void){
     srand(time(NULL));
     int v[SIZE];
