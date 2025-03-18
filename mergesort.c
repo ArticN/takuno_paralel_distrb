@@ -127,21 +127,22 @@ void mergesort_recurs(int v[], int l, int r) {
     }
 }
 
-void mergesort_paralelo(int v[], int n) {
-    int act;
-    int l;
-
-    for (act = 1; act <= n-1; act = 2*act) {
-        #pragma omp parallel for private(l) shared(v)
-        for (l = 0; l < n-1; l += 2*act) {
-            int m = l + act - 1;
-            if (m >= n-1)
-                m = n-1;
-
-            int r = (l + 2*act - 1 < n-1) ? l + 2*act - 1 : n-1;
-
-            merge(v, l, m, r);
+void mergesort_paralelo(int v[], int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        #pragma omp parallel
+        {
+            #pragma omp single
+            {
+                #pragma omp task
+                mergesort_paralelo(v,l,m);
+                
+                #pragma omp task
+                mergesort_paralelo(v, m+1, r);
+            }
         }
+
+        merge(v, l, m, r);
     }
 }
 
@@ -157,13 +158,13 @@ void iterador_merge_recursiv(void (*sort_func)(int[], int, int), int v[], int n,
     }
 }
 
-void iterador_merge_paralelo(void (*sort_func)(int[], int), int v[], int n, double *times) {
+void iterador_merge_paralelo(void (*sort_func)(int[], int, int), int v[], int n, double *times) {
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < n; j++) {
             v[j] = rand() % 100000;
         }
         double start = omp_get_wtime();
-        sort_func(v, n);
+        sort_func(v, 0, n - 1);
         double end = omp_get_wtime();
         times[i] = end - start;
     }
@@ -185,5 +186,6 @@ int main(void) {
 
     save_file(times_recursive, times_parallel, 10);
 
+    printf("O Número de Threads utilizadas foi %d\n", omp_get_max_threads());
     return 0;
 }
