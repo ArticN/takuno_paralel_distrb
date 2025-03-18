@@ -2,21 +2,27 @@
 #include <omp.h>
 #include <stdio.h>
 #include <time.h>
-#define SIZE 100000
+#define SIZE 1000
 
 void printV(int v[], double times[], int n){
     double sum = 0;
-
-    for (int i = 0; i < SIZE; i++){
-        printf("%d ", v[i]);
+    if(SIZE < 1000){
+        for (int i = 0; i < SIZE; i++){
+            printf("%d ", v[i]);
+        }   
     }
-
+    else{
+        printf("Array passa das 1000 casas, print removido para melhor visualização, ordenação funcionando normalmente");
+        printf("\n");   
+    }
+    
     printf("+----------------------------------------+\n");
     printf("| Execução          | Tempo (segundos)    \n");
     printf("+----------------------------------------+\n");
 
     for (int i = 0; i< n; i++){
         printf("| Execução %2d  | %12.6f s |\n", i+1, times[i]);
+        sum += times[i];
     }
 
     printf("+----------------------------------------+\n");
@@ -85,7 +91,7 @@ void merge_sort(int v[], int l, int r){
     }
 }
 
-void merge_sort_iterative(int v[], int n) {
+void mergesort_paralelo(int v[], int n) {
     int act;
     int l;
 
@@ -103,11 +109,11 @@ void merge_sort_iterative(int v[], int n) {
     }
 }
 
-void run_and_measure(void (*sort_func)(int[], int, int), int v[], int n, double *times) {
+void iterador_merge_recursiv(void (*sort_func)(int[], int, int), int v[], int n, double *times) {
     clock_t start, end;
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < n; j++) {
-            v[j] = rand() % 100;
+            v[j] = rand() % 100000;
         }
         start = clock();
         sort_func(v, 0, n - 1);
@@ -116,11 +122,11 @@ void run_and_measure(void (*sort_func)(int[], int, int), int v[], int n, double 
     }
 }
 
-void run_and_measure_iterative(void (*sort_func)(int[], int), int v[], int n, double *times) {
+void iterador_merge_paralelo(void (*sort_func)(int[], int), int v[], int n, double *times) {
     clock_t start, end;
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < n; j++) {
-            v[j] = rand() % 100;
+            v[j] = rand() % 100000;
         }
         start = clock();
         sort_func(v, n);
@@ -146,12 +152,12 @@ int main(void){
     double times_iterative[10];
 
     printf("Merge Sort Recursivo:\n");
-    run_and_measure(merge_sort, v, SIZE, times_recursive);
-    print_times(times_recursive, 10);
+    iterador_merge_recursiv(merge_sort, v, SIZE, times_recursive);
+    printV(v, times_recursive, 10);
 
     printf("\nMerge Sort Iterativo:\n");
-    run_and_measure_iterative(merge_sort_iterative, v, SIZE, times_iterative);
-    print_times(times_iterative, 10);
+    iterador_merge_paralelo(mergesort_paralelo, v, SIZE, times_iterative);
+    printV(v, times_iterative, 10);
 
     return 0;
 }
