@@ -2,12 +2,27 @@
 #include <omp.h>
 #include <stdio.h>
 #include <time.h>
-#define SIZE 10000
+#define SIZE 100000
 
-void printV(int v[]){
-    for (int i = 0; i < SIZE; i++)
+void printV(int v[], double times[], int n){
+    double sum = 0;
+
+    for (int i = 0; i < SIZE; i++){
         printf("%d ", v[i]);
-    printf("\n");
+    }
+
+    printf("+----------------------------------------+\n");
+    printf("| Execução          | Tempo (segundos)    \n");
+    printf("+----------------------------------------+\n");
+
+    for (int i = 0; i< n; i++){
+        printf("| Execução %2d  | %12.6f s |\n", i+1, times[i]);
+    }
+
+    printf("+----------------------------------------+\n");
+    printf("| Tempo Total         | %12.6f s    |\n", sum);
+    printf("| Média por Execução  | %12.6f s    |\n", sum/n);
+    printf("+----------------------------------------+\n");
 }
 
 void merge(int v[], int l, int m, int r) {
@@ -15,8 +30,8 @@ void merge(int v[], int l, int m, int r) {
     int n1 = m - l + 1;
     int n2 = r - m;
 
-    int *LVec = (int*) calloc(n1, sizeof(int));
-    int *RVec = (int*) calloc(n2, sizeof(int));
+    int *LVec = (int*) malloc(n1 * sizeof(int));
+    int *RVec = (int*) malloc(n2 * sizeof(int));
 
     if (LVec == NULL || RVec == NULL) {
         fprintf(stderr, "Erro ao alocar memória\n");
@@ -78,6 +93,9 @@ void merge_sort_iterative(int v[], int n) {
         #pragma omp parallel for private(l) shared(v)
         for (l = 0; l < n-1; l += 2*act) {
             int m = l + act - 1;
+            if (m >= n-1)
+                m = n-1;
+
             int r = (l + 2*act - 1 < n-1) ? l + 2*act - 1 : n-1;
 
             merge(v, l, m, r);
